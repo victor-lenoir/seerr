@@ -61,6 +61,7 @@ const TitleCard = ({
   summary,
   year,
   title,
+  userScore,
   status,
   mediaType,
   isAddedToWatchlist = false,
@@ -355,6 +356,15 @@ const TitleCard = ({
                     : intl.formatMessage(globalMessages.tvshow)}
               </div>
             </div>
+            {userScore != null && userScore > 0 ? (
+              <div
+                className={`pointer-events-none z-40 self-start rounded-full border border-red-500 bg-red-600 bg-opacity-80 shadow-md`}
+              >
+                <div className="flex h-4 items-center px-2 py-2 text-center text-xs font-medium uppercase tracking-wider text-white sm:h-5">
+                  {userScore.toFixed(2)}
+                </div>
+              </div>
+            ) : null}
             {showDetail && currentStatus !== MediaStatus.BLOCKLISTED && (
               <div className="flex flex-col gap-1">
                 {user?.userType !== UserType.PLEX &&

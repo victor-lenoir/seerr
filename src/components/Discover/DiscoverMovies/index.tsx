@@ -29,6 +29,7 @@ const messages = defineMessages('components.Discover.DiscoverMovies', {
   sortReleaseDateDesc: 'Release Date Descending',
   sortTmdbRatingAsc: 'TMDB Rating Ascending',
   sortTmdbRatingDesc: 'TMDB Rating Descending',
+  sortTmdbVoteCountDesc: 'TMDB Vote Count Descending',
   sortTitleAsc: 'Title (A-Z) Ascending',
   sortTitleDesc: 'Title (Z-A) Descending',
 });
@@ -40,6 +41,7 @@ const SortOptions: Record<string, TMDBSortOptions> = {
   ReleaseDateDesc: 'release_date.desc',
   TmdbRatingAsc: 'vote_average.asc',
   TmdbRatingDesc: 'vote_average.desc',
+  TmdbVoteCountDesc: 'vote_count.desc',
   TitleAsc: 'original_title.asc',
   TitleDesc: 'original_title.desc',
 } as const;
@@ -99,6 +101,9 @@ const DiscoverMovies = () => {
               </option>
               <option value={SortOptions.ReleaseDateAsc}>
                 {intl.formatMessage(messages.sortReleaseDateAsc)}
+              </option>
+              <option value={SortOptions.TmdbVoteCountDesc}>
+                {intl.formatMessage(messages.sortTmdbVoteCountDesc)}
               </option>
               <option value={SortOptions.TmdbRatingDesc}>
                 {intl.formatMessage(messages.sortTmdbRatingDesc)}
