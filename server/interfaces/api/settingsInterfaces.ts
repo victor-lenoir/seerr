@@ -31,6 +31,7 @@ export interface PublicSettingsResponse {
   applicationUrl: string;
   hideAvailable: boolean;
   hideBlocklisted: boolean;
+  hideRequested: boolean;
   localLogin: boolean;
   mediaServerLogin: boolean;
   movie4kEnabled: boolean;
@@ -66,10 +67,13 @@ export interface CacheItem {
 
 export interface CacheResponse {
   apiCaches: CacheItem[];
-  imageCache: Record<'tmdb' | 'avatar', { size: number; imageCount: number }>;
-  dnsCache: {
-    stats: DnsStats | undefined;
-    entries: DnsEntries | undefined;
+  imageCache: Record<
+    'tmdb' | 'tvdb' | 'avatar',
+    { size: number; imageCount: number }
+  >;
+  dnsCache?: {
+    stats: DnsStats;
+    entries: DnsEntries;
   };
 }
 

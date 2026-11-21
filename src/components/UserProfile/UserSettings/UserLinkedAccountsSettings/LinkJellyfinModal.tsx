@@ -6,7 +6,7 @@ import { useUser } from '@app/hooks/useUser';
 import defineMessages from '@app/utils/defineMessages';
 import { Transition } from '@headlessui/react';
 import { QrCodeIcon } from '@heroicons/react/24/outline';
-import { MediaServerType } from '@server/constants/server';
+import { MediaServerType, ServerType } from '@server/constants/server';
 import axios from 'axios';
 import { Field, Form, Formik } from 'formik';
 import { useState } from 'react';
@@ -63,16 +63,17 @@ const LinkJellyfinModal = ({
   const applicationName = settings.currentSettings.applicationTitle;
   const mediaServerName =
     settings.currentSettings.mediaServerType === MediaServerType.EMBY
-      ? 'Emby'
-      : 'Jellyfin';
+      ? ServerType.EMBY
+      : ServerType.JELLYFIN;
 
   return (
     <Transition
+      as="div"
       appear
       show={show}
       enter="transition ease-in-out duration-300 transform opacity-0"
       enterFrom="opacity-0"
-      enterTo="opacuty-100"
+      enterTo="opacity-100"
       leave="transition ease-in-out duration-300 transform opacity-100"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"

@@ -43,7 +43,7 @@ tvRoutes.get('/:id', async (req, res, next) => {
       },
     });
 
-    const data = mapTvDetails(tv, media, onUserWatchlist);
+    const data = mapTvDetails(tv, media?.filter(req.user), onUserWatchlist);
 
     if (!data.tvdbScore && tv.external_ids?.tvdb_id) {
       try {
@@ -127,7 +127,8 @@ tvRoutes.get('/:id/recommendations', async (req, res, next) => {
       results.results.map((result) => ({
         tmdbId: result.id,
         mediaType: MediaType.TV,
-      }))
+      })),
+      { includeActiveRequest: true }
     );
 
     return res.status(200).json({
@@ -171,7 +172,8 @@ tvRoutes.get('/:id/similar', async (req, res, next) => {
       results.results.map((result) => ({
         tmdbId: result.id,
         mediaType: MediaType.TV,
-      }))
+      })),
+      { includeActiveRequest: true }
     );
 
     return res.status(200).json({

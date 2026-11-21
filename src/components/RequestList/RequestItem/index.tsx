@@ -10,7 +10,10 @@ import useToasts from '@app/hooks/useToasts';
 import { Permission, useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
-import { refreshIntervalHelper } from '@app/utils/refreshIntervalHelper';
+import {
+  getRequestDownloadStatus,
+  refreshIntervalHelper,
+} from '@app/utils/refreshIntervalHelper';
 import {
   ArrowPathIcon,
   CheckIcon,
@@ -26,7 +29,7 @@ import type { MovieDetails } from '@server/models/Movie';
 import type { TvDetails } from '@server/models/Tv';
 import axios from 'axios';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { FormattedRelativeTime, useIntl } from 'react-intl';
 import useSWR, { mutate } from 'swr';
@@ -79,6 +82,15 @@ const RequestItemError = ({
     iOSPlexUrl: requestData?.media?.iOSPlexUrl,
     iOSPlexUrl4k: requestData?.media?.iOSPlexUrl4k,
   });
+
+  const requestDownloadStatus = getRequestDownloadStatus(
+    requestData?.media?.[
+      requestData?.is4k ? 'downloadStatus4k' : 'downloadStatus'
+    ],
+    requestData?.type === 'tv'
+      ? (requestData?.seasons ?? []).map((season) => season.seasonNumber)
+      : []
+  );
 
   return (
     <div className="flex h-64 w-full flex-col justify-center rounded-xl bg-gray-800 py-4 text-gray-400 shadow-md ring-1 ring-red-500 xl:h-28 xl:flex-row">
@@ -139,21 +151,9 @@ const RequestItemError = ({
                         requestData.is4k ? 'status4k' : 'status'
                       ]
                     }
-                    downloadItem={
-                      requestData.media[
-                        requestData.is4k ? 'downloadStatus4k' : 'downloadStatus'
-                      ]
-                    }
+                    downloadItem={requestDownloadStatus}
                     title={intl.formatMessage(messages.unknowntitle)}
-                    inProgress={
-                      (
-                        requestData.media[
-                          requestData.is4k
-                            ? 'downloadStatus4k'
-                            : 'downloadStatus'
-                        ] ?? []
-                      ).length > 0
-                    }
+                    inProgress={requestDownloadStatus.length > 0}
                     is4k={requestData.is4k}
                     mediaType={requestData.type}
                     plexUrl={requestData.is4k ? plexUrl4k : plexUrl}
@@ -315,6 +315,9 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
     NonFunctionProperties<MediaRequest>
   >(`/api/v1/request/${request.id}`, {
     fallbackData: request,
+    revalidateOnMount: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     refreshInterval: refreshIntervalHelper(
       {
         downloadStatus: request.media.downloadStatus,
@@ -323,6 +326,10 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
       15000
     ),
   });
+
+  useEffect(() => {
+    revalidate(request, false);
+  }, [request, revalidate]);
 
   const [isRetrying, setRetrying] = useState(false);
   const [updatingType, setUpdatingType] = useState<
@@ -379,6 +386,7 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
     try {
       const result = await axios.post(`/api/v1/request/${request.id}/retry`);
       revalidate(result.data);
+      revalidateList();
     } catch {
       addToast(intl.formatMessage(messages.failedretry), {
         autoDismiss: true,
@@ -413,6 +421,13 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
       />
     );
   }
+
+  const requestDownloadStatus = getRequestDownloadStatus(
+    requestData.media[requestData.is4k ? 'downloadStatus4k' : 'downloadStatus'],
+    requestData.type === 'tv'
+      ? requestData.seasons.map((season) => season.seasonNumber)
+      : []
+  );
 
   return (
     <>
@@ -540,19 +555,9 @@ const RequestItem = ({ request, revalidateList }: RequestItemProps) => {
                   status={
                     requestData.media[requestData.is4k ? 'status4k' : 'status']
                   }
-                  downloadItem={
-                    requestData.media[
-                      requestData.is4k ? 'downloadStatus4k' : 'downloadStatus'
-                    ]
-                  }
+                  downloadItem={requestDownloadStatus}
                   title={isMovie(title) ? title.title : title.name}
-                  inProgress={
-                    (
-                      requestData.media[
-                        requestData.is4k ? 'downloadStatus4k' : 'downloadStatus'
-                      ] ?? []
-                    ).length > 0
-                  }
+                  inProgress={requestDownloadStatus.length > 0}
                   is4k={requestData.is4k}
                   tmdbId={requestData.media.tmdbId}
                   mediaType={requestData.type}
