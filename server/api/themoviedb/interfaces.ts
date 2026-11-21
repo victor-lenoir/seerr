@@ -287,6 +287,7 @@ export interface TmdbTvDetails {
   type: string;
   vote_average: number;
   vote_count: number;
+  tvdb_score?: number;
   aggregate_credits: {
     cast: TmdbAggregateCreditCast[];
   };

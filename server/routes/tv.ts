@@ -3,6 +3,7 @@ import RottenTomatoes from '@server/api/rating/rottentomatoes';
 import TheMovieDb from '@server/api/themoviedb';
 import { ANIME_KEYWORD_ID } from '@server/api/themoviedb/constants';
 import type { TmdbKeyword } from '@server/api/themoviedb/interfaces';
+import Tvdb from '@server/api/tvdb';
 import { MediaType } from '@server/constants/media';
 import { getRepository } from '@server/datasource';
 import Media from '@server/entity/Media';
@@ -43,6 +44,18 @@ tvRoutes.get('/:id', async (req, res, next) => {
     });
 
     const data = mapTvDetails(tv, media, onUserWatchlist);
+
+    if (!data.tvdbScore && tv.external_ids?.tvdb_id) {
+      try {
+        const tvdb = await Tvdb.getInstance();
+        const tvdbScore = await tvdb.getTvdbScore(tv.external_ids.tvdb_id);
+        if (tvdbScore) {
+          data.tvdbScore = tvdbScore;
+        }
+      } catch {
+        // TVDB score fetch failed, continue without it
+      }
+    }
 
     // TMDB issue where it doesnt fallback to English when no overview is available in requested locale.
     if (!data.overview) {

@@ -20,6 +20,7 @@ interface SearchResult {
   backdropPath?: string;
   voteCount: number;
   voteAverage: number;
+  tvdbScore?: number;
   genreIds: number[];
   overview: string;
   originalLanguage: string;
@@ -92,7 +93,8 @@ export const mapMovieResult = (
 
 export const mapTvResult = (
   tvResult: TmdbTvResult,
-  media?: Media
+  media?: Media,
+  tvdbScore?: number
 ): TvResult => ({
   id: tvResult.id,
   firstAirDate: tvResult.first_air_date,
@@ -107,6 +109,7 @@ export const mapTvResult = (
   popularity: tvResult.popularity,
   voteAverage: tvResult.vote_average,
   voteCount: tvResult.vote_count,
+  tvdbScore,
   backdropPath: tvResult.backdrop_path,
   posterPath: tvResult.poster_path,
   mediaInfo: media,

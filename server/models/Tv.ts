@@ -103,6 +103,7 @@ export interface TvDetails {
   type: string;
   voteAverage: number;
   voteCount: number;
+  tvdbScore?: number;
   credits: {
     cast: Cast[];
     crew: Crew[];
@@ -206,6 +207,7 @@ export const mapTvDetails = (
   type: show.type,
   voteAverage: show.vote_average,
   voteCount: show.vote_count,
+  tvdbScore: show.tvdb_score,
   backdropPath: show.backdrop_path,
   lastEpisodeToAir: show.last_episode_to_air
     ? mapEpisodeResult(show.last_episode_to_air)

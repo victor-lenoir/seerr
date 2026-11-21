@@ -109,6 +109,18 @@ class Tvdb extends ExternalAPI implements TvShowProvider {
     }
   }
 
+  public async getTvdbScore(tvdbId: number): Promise<number | undefined> {
+    try {
+      await this.refreshToken();
+
+      const tvdbData = await this.fetchTvdbShowData(tvdbId);
+
+      return tvdbData?.score;
+    } catch {
+      return undefined;
+    }
+  }
+
   async login(): Promise<TvdbLoginResponse> {
     let body: { apiKey: string; pin?: string } = {
       apiKey: 'd00d9ecb-a9d0-4860-958a-74b14a041405',
@@ -248,7 +260,7 @@ class Tvdb extends ExternalAPI implements TvShowProvider {
         return tmdbTvShow;
       }
 
-      return { ...tmdbTvShow, seasons };
+      return { ...tmdbTvShow, seasons, tvdb_score: tvdbData.score };
     } catch (error) {
       logger.error(
         `Failed to enrich TMDB show with TVDB data: ${error.message} token: ${this.token}`

@@ -2,6 +2,7 @@ import RTAudFresh from '@app/assets/rt_aud_fresh.svg';
 import RTAudRotten from '@app/assets/rt_aud_rotten.svg';
 import RTFresh from '@app/assets/rt_fresh.svg';
 import RTRotten from '@app/assets/rt_rotten.svg';
+import TvdbLogo from '@app/assets/services/tvdb.svg';
 import Spinner from '@app/assets/spinner.svg';
 import TmdbLogo from '@app/assets/tmdb_logo.svg';
 import BlocklistModal from '@app/components/BlocklistModal';
@@ -99,6 +100,7 @@ const messages = defineMessages('components.TvDetails', {
   rtcriticsscore: 'Rotten Tomatoes Tomatometer',
   rtaudiencescore: 'Rotten Tomatoes Audience Score',
   tmdbuserscore: 'TMDB User Score',
+  tvdbuserscore: 'TVDB User Score',
   watchlistSuccess: '<strong>{title}</strong> added to watchlist successfully!',
   watchlistDeleted:
     '<strong>{title}</strong> Removed from watchlist successfully!',
@@ -1098,7 +1100,8 @@ const TvDetails = ({ tv }: TvDetailsProps) => {
           <div className="media-facts">
             {(!!data.voteCount ||
               (ratingData?.criticsRating && !!ratingData?.criticsScore) ||
-              (ratingData?.audienceRating && !!ratingData?.audienceScore)) && (
+              (ratingData?.audienceRating && !!ratingData?.audienceScore) ||
+              !!data.tvdbScore) && (
               <div className="media-ratings">
                 {ratingData?.criticsRating && !!ratingData?.criticsScore && (
                   <Tooltip
@@ -1148,6 +1151,19 @@ const TvDetails = ({ tv }: TvDetailsProps) => {
                     >
                       <TmdbLogo className="mr-1 w-6" />
                       <span>{Math.round(data.voteAverage * 10)}%</span>
+                    </a>
+                  </Tooltip>
+                )}
+                {!!data.tvdbScore && !!data.externalIds.tvdbId && (
+                  <Tooltip content={intl.formatMessage(messages.tvdbuserscore)}>
+                    <a
+                      href={`https://www.thetvdb.com/?tab=series&id=${data.externalIds.tvdbId}`}
+                      className="media-rating"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <TvdbLogo className="mr-1 w-6" />
+                      <span>{Math.round(data.tvdbScore * 10)}%</span>
                     </a>
                   </Tooltip>
                 )}
